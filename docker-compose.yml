@@ -9,13 +9,6 @@ volumes:
     driver: ${VOLUMES_DRIVER}
   
 services:
-### Composer ############################################
-    worker-composer:
-      image: composer/composer:latest
-      command: install
-      working_dir: ${APP_CODE_PATH_CONTAINER}
-      volumes: 
-        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
 
 ### PHP Worker ############################################
     php-worker:
@@ -25,18 +18,19 @@ services:
           - PHP_VERSION=${PHP_VERSION}
           - PUID=${PHP_WORKER_PUID}
           - PGID=${PHP_WORKER_PGID}
+      image: laradock-worker/php-worker
       volumes:
         - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
         - ./php-worker/supervisord.d:/etc/supervisord.d
       environment:
         - TZ=${WORKSPACE_TIMEZONE}
       depends_on:
-        - worker-mysql
+        - mysql-php-worker
       networks:
         - backend
 
 ### MySQL ################################################
-    worker-mysql:
+    mysql-php-worker:
       build:
         context: ./mysql
         args:
@@ -53,3 +47,14 @@ services:
         - "${MYSQL_PORT}:3306"
       networks:
         - backend
+### Composer ############################################
+    composer-php-worker:
+      build:
+        context: ./composer
+      image: laradock-worker/php-worker-composer
+      command: install
+      working_dir: ${APP_CODE_PATH_CONTAINER}
+      depends_on:
+        - php-worker
+      volumes: 
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
