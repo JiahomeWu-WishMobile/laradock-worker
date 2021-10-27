@@ -8,9 +8,9 @@ PHP-Worker is using [Supervisor: A Process Control System](http://supervisord.or
 First
 ```
 cp .env.example .env
-cp php-worker/supervisord.d/laravel-scheduler.conf.example laravel-scheduler.conf
+cp php-worker/supervisord.d/laravel-scheduler.conf.example php-worker/supervisord.d/laravel-scheduler.conf
 ```
-After change  `APP_CODE_PATH_HOST={your laravel project location}` in `.env`
+After change  `APP_CODE_PATH_HOST={your laravel project location}` in `.env`.
 Run follow command and there you go
 ```
 docker-compose up -d
