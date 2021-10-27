@@ -1,0 +1,55 @@
+version: '3.5'
+
+networks:
+  backend:
+    driver: ${NETWORKS_DRIVER}
+    
+volumes:
+  mysql:
+    driver: ${VOLUMES_DRIVER}
+  
+services:
+### Composer ############################################
+    worker-composer:
+      image: composer/composer:latest
+      command: install
+      working_dir: ${APP_CODE_PATH_CONTAINER}
+      volumes: 
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+
+### PHP Worker ############################################
+    php-worker:
+      build:
+        context: ./php-worker
+        args:
+          - PHP_VERSION=${PHP_VERSION}
+          - PUID=${PHP_WORKER_PUID}
+          - PGID=${PHP_WORKER_PGID}
+      volumes:
+        - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+        - ./php-worker/supervisord.d:/etc/supervisord.d
+      environment:
+        - TZ=${WORKSPACE_TIMEZONE}
+      depends_on:
+        - worker-mysql
+      networks:
+        - backend
+
+### MySQL ################################################
+    worker-mysql:
+      build:
+        context: ./mysql
+        args:
+          - MYSQL_VERSION=${MYSQL_VERSION}
+      environment:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - TZ=${WORKSPACE_TIMEZONE}
+      volumes:
+        - ${DATA_PATH_HOST}/mysql:/var/lib/mysql:delegated
+      ports:
+        - "${MYSQL_PORT}:3306"
+      networks:
+        - backend
