@@ -24,7 +24,9 @@ RUN apk --update add wget \
   oniguruma-dev \
   libressl \
   libressl-dev \
-  supervisor
+  supervisor \
+  tzdata\
+  bash
 
 
 RUN pecl channel-update pecl.php.net; \
