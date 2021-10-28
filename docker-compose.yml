@@ -25,16 +25,16 @@ services:
       environment:
         - TZ=${WORKSPACE_TIMEZONE}
       depends_on:
-        - mysql-php-worker
+        - mariadb-php-worker
       networks:
         - backend
 
-### MySQL ################################################
-    mysql-php-worker:
+### MariaDB ##############################################
+    mariadb-php-worker:
       build:
-        context: ./mysql
+        context: ./mariadb
         args:
-          - MYSQL_VERSION=${MYSQL_VERSION}
+          - MARIADB_VERSION=${MARIADB_VERSION}
       environment:
         - MYSQL_DATABASE=${MYSQL_DATABASE}
         - MYSQL_USER=${MYSQL_USER}
@@ -42,9 +42,7 @@ services:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         - TZ=${WORKSPACE_TIMEZONE}
       volumes:
-        - ${DATA_PATH_HOST}/mysql:/var/lib/mysql:delegated
-      ports:
-        - "${MYSQL_PORT}:3306"
+        - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql:delegated
       networks:
         - backend
 ### Composer ############################################
