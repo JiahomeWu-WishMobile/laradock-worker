@@ -43,6 +43,8 @@ services:
         - TZ=${WORKSPACE_TIMEZONE}
       volumes:
         - ${DATA_PATH_HOST}/mariadb:/var/lib/mysql:delegated
+      ports:
+        - "${MYSQL_PORT}:3306"
       networks:
         - backend
 ### Composer ############################################
