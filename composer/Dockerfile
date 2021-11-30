@@ -20,7 +20,6 @@ RUN sh installComposer.sh
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chown ${PUID}:${PGID} /docker-entrypoint.sh
 RUN chmod 777 /docker-entrypoint.sh
-WORKDIR /app
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
